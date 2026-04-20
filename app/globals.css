@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300;1,9..144,900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  background: #0a0a0a;
+  color: #fafaf9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+.font-display { font-family: 'Fraunces', serif; }
+.font-sans    { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+.font-mono    { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+/* Hide default scrollbar appearance on thin scrollbars */
+.scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }

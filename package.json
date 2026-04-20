@@ -1,0 +1,29 @@
+{
+  "name": "command-center",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal daily command center — Kanban + Eisenhower + Focus + AI copilot.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.1",
+    "lucide-react": "^0.400.0",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.15",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}
