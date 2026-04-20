@@ -5,7 +5,7 @@ import {
   Plus, Search, Sparkles, LayoutGrid, Calendar, Target, Focus,
   Clock, CheckCircle2, Trash2, X, Send, Loader2, Zap, AlertCircle,
   ArrowRight, Play, Pause, Coffee, ChevronRight, ChevronLeft,
-  Briefcase, Users, Inbox, Flame, Brain, CloudLightning,
+  Briefcase, Inbox, Flame, Brain, CloudLightning,
   Link as LinkIcon, FileText, Repeat, Ban, UserCheck,
   Lightbulb, Sunrise, BookOpen, ListChecks, Square, CheckSquare,
   Pencil, StickyNote, ArrowUpRight
@@ -31,8 +31,6 @@ const PRIORITIES = {
   q3: { label: 'Urgente',              short: 'Q3', color: '#38BDF8', bg: 'rgba(56,189,248,0.12)' },
   q4: { label: 'Después',              short: 'Q4', color: '#71717A', bg: 'rgba(113,113,122,0.12)' },
 };
-
-const TEAM = ['Alejandro', 'Diego', 'Tania', 'Berenice', 'Emilse', 'Gaby'];
 
 const RECURRENCE_OPTIONS = [
   { value: 'none', label: 'No recurrente' },
@@ -218,7 +216,6 @@ export default function CommandCenter() {
       column: partial.column || 'inbox',
       priority: partial.priority || 'q2',
       estimate: partial.estimate || 30,
-      assignee: partial.assignee || 'Alejandro',
       time: partial.time || null,
       description: partial.description || '',
       subtasks: partial.subtasks || [],
@@ -311,11 +308,11 @@ export default function CommandCenter() {
 
     const projectList = Object.values(projectsRef.current).map(p => p.name).join(', ') || 'ninguno';
     const projectKeyList = Object.entries(projectsRef.current).map(([id, p]) => `${p.name}=${id}`).join(', ');
-    const sys = `Eres el copiloto del founder. Proyectos actuales: ${projectList}. IDs: ${projectKeyList}. Equipo: ${TEAM.join(', ')}.
+    const sys = `Eres el copiloto personal del usuario. Proyectos actuales: ${projectList}. IDs: ${projectKeyList}.
 
 Responde SIEMPRE con JSON válido (sin backticks, sin markdown):
 { "intent": "create_task" | "chat",
-  "tasks": [ { "title": "...", "project": "<project_id_exacto>", "column": "inbox|hoy|en_progreso|revision|hecho", "priority": "q1|q2|q3|q4", "estimate": 30, "assignee": "<nombre_del_equipo>", "time": "HH:MM", "description": "...", "recurrence": "none|daily|weekly|biweekly|monthly" } ],
+  "tasks": [ { "title": "...", "project": "<project_id_exacto>", "column": "inbox|hoy|en_progreso|revision|hecho", "priority": "q1|q2|q3|q4", "estimate": 30, "time": "HH:MM", "description": "...", "recurrence": "none|daily|weekly|biweekly|monthly" } ],
   "message": "respuesta corta en español" }
 
 Usa el project_id exacto (no el nombre). Si no hay proyectos, intent="chat" y sugiere crear uno. Eisenhower: q1=urgente+importante, q2=importante, q3=urgente, q4=ninguno.`;
@@ -440,7 +437,6 @@ Tono directo, español. Máx 300 palabras. Honesto sobre lo que no avanzó.`;
 
   const selectedTask = tasks.find(t => t.id === selectedTaskId);
   const projectCount = Object.keys(projects).length;
-  const waitingCount = tasks.filter(t => t.column === 'revision' && t.assignee !== 'Alejandro').length;
   const blockersCount = tasks.filter(t => t.blocker && t.column !== 'hecho').length;
   const kanbanTasks = kanbanFilter === 'ALL' ? tasks : tasks.filter(t => t.project === kanbanFilter);
 
@@ -546,11 +542,6 @@ Tono directo, español. Máx 300 palabras. Honesto sobre lo que no avanzó.`;
               <span className="flex-1 text-left">Notas</span>
               {notes.length > 0 && <span className="text-[10px] text-stone-500 font-mono">{notes.length}</span>}
             </button>
-            <button onClick={() => { setView('esperando'); setSelectedProjectKey(null); }} className={`w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm transition-all ${view === 'esperando' ? 'bg-stone-800/80 text-stone-100' : 'text-stone-400 hover:bg-stone-900 hover:text-stone-200'}`}>
-              <UserCheck className="w-3.5 h-3.5" />
-              <span className="flex-1 text-left">Esperando de</span>
-              {waitingCount > 0 && <span className="text-[10px] text-amber-400 font-mono">{waitingCount}</span>}
-            </button>
             <button onClick={() => { setView('bloqueadores'); setSelectedProjectKey(null); }} className={`w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm transition-all ${view === 'bloqueadores' ? 'bg-stone-800/80 text-stone-100' : 'text-stone-400 hover:bg-stone-900 hover:text-stone-200'}`}>
               <Ban className="w-3.5 h-3.5" />
               <span className="flex-1 text-left">Bloqueadores</span>
@@ -595,22 +586,6 @@ Tono directo, español. Máx 300 palabras. Honesto sobre lo que no avanzó.`;
                 </div>
               );
             })}
-          </div>
-
-          <div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-mono mb-2 px-2">Equipo</div>
-            <div className="space-y-0.5">
-              {TEAM.map(name => {
-                const count = tasks.filter(t => t.assignee === name && t.column !== 'hecho').length;
-                return (
-                  <div key={name} className="flex items-center gap-3 px-2 py-1.5 text-xs text-stone-400">
-                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-stone-700 to-stone-800 flex items-center justify-center text-[9px] font-semibold text-stone-300 shrink-0">{name[0]}</div>
-                    <span className="flex-1">{name}</span>
-                    <span className="text-[10px] text-stone-600 font-mono">{count}</span>
-                  </div>
-                );
-              })}
-            </div>
           </div>
         </aside>
 
@@ -704,7 +679,6 @@ Tono directo, español. Máx 300 palabras. Honesto sobre lo que no avanzó.`;
                 onEdit={() => { setEditingProject(projects[selectedProjectKey]); setProjectModalOpen(true); }}
                 onBack={() => { setView('tablero'); setSelectedProjectKey(null); }} />
             )}
-            {view === 'esperando' && <WaitingView tasks={tasks} onOpen={(t) => setSelectedTaskId(t.id)} onMove={moveTask} />}
             {view === 'bloqueadores' && <BlockersView tasks={tasks} onOpen={(t) => setSelectedTaskId(t.id)} onClearBlocker={(id) => updateTask(id, { blocker: null })} />}
           </div>
         </main>
@@ -950,10 +924,6 @@ function TaskCard({ task, onDelete, onFocus, onOpen, onDragStart, onDragEnd, com
           <div className="flex items-center gap-3 mt-2.5 text-[10px] text-stone-500 font-mono">
             {task.time && <div className="flex items-center gap-1"><Clock className="w-3 h-3" />{task.time}</div>}
             <div className="flex items-center gap-1"><Clock className="w-3 h-3" />{task.estimate}m</div>
-            <div className="flex items-center gap-1 ml-auto">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-stone-700 to-stone-800 flex items-center justify-center text-[8px] font-semibold text-stone-300">{task.assignee[0]}</div>
-              <span className="text-stone-500">{task.assignee}</span>
-            </div>
           </div>
         </div>
       </div>
@@ -1290,8 +1260,6 @@ function ProjectDetailView({ project, meta, tasks, onOpenTask, onUpdateMeta, onE
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const blocked = tasks.filter(t => t.blocker && t.column !== 'hecho');
   const thisWeekMin = tasks.filter(t => t.column !== 'hecho').reduce((s, t) => s + t.estimate, 0);
-  const teamLoad = {};
-  tasks.filter(t => t.column !== 'hecho').forEach(t => { teamLoad[t.assignee] = (teamLoad[t.assignee] || 0) + 1; });
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -1331,7 +1299,6 @@ function ProjectDetailView({ project, meta, tasks, onOpenTask, onUpdateMeta, onE
           { id: 'notas', label: 'Notas', icon: FileText },
           { id: 'decisiones', label: 'Decisiones', icon: Lightbulb },
           { id: 'links', label: 'Links', icon: LinkIcon },
-          { id: 'equipo', label: 'Equipo', icon: Users },
         ].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} className={`relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${tab === t.id ? 'text-stone-100' : 'text-stone-500 hover:text-stone-300'}`}>
             <t.icon className="w-3.5 h-3.5" /><span>{t.label}</span>
@@ -1417,32 +1384,6 @@ function ProjectDetailView({ project, meta, tasks, onOpenTask, onUpdateMeta, onE
           </div>
         </div>
       )}
-
-      {tab === 'equipo' && (
-        <div className="space-y-2">
-          {Object.keys(teamLoad).length === 0 && <div className="text-xs text-stone-600 italic font-display">Sin asignaciones activas</div>}
-          {TEAM.filter(name => teamLoad[name]).map(name => {
-            const count = teamLoad[name];
-            const max = Math.max(...Object.values(teamLoad));
-            const loadPct = (count / max) * 100;
-            return (
-              <div key={name} className="p-4 bg-stone-900/30 border border-stone-800 rounded-xl">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-stone-700 to-stone-800 flex items-center justify-center text-xs font-semibold text-stone-300">{name[0]}</div>
-                  <div className="flex-1">
-                    <div className="text-sm font-medium">{name}</div>
-                    <div className="text-[10px] text-stone-500 font-mono">{count} tarea(s) activa(s)</div>
-                  </div>
-                  <div className="font-display text-2xl font-light">{count}</div>
-                </div>
-                <div className="h-1 bg-stone-800 rounded-full overflow-hidden">
-                  <div className="h-full transition-all" style={{ width: `${loadPct}%`, background: p.color }} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }
@@ -1453,65 +1394,6 @@ function MetricCard({ label, value, sub, color }) {
       <div className="text-[10px] uppercase tracking-wider text-stone-500 font-mono mb-1">{label}</div>
       <div className="font-display text-3xl font-light" style={color ? { color } : {}}>{value}</div>
       <div className="text-[10px] text-stone-500 font-mono mt-1">{sub}</div>
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════
-// WAITING
-// ═══════════════════════════════════════════════════════════
-function WaitingView({ tasks, onOpen, onMove }) {
-  const projects = useProjects();
-  const waitingTasks = tasks.filter(t => t.column === 'revision' && t.assignee !== 'Alejandro');
-  const byPerson = {};
-  waitingTasks.forEach(t => { if (!byPerson[t.assignee]) byPerson[t.assignee] = []; byPerson[t.assignee].push(t); });
-
-  return (
-    <div className="max-w-5xl mx-auto">
-      <div className="mb-8">
-        <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500 font-mono mb-2">Delegación activa</div>
-        <h1 className="font-display text-4xl font-light"><span className="italic">Esperando</span> <span className="text-amber-400 font-semibold">de tu equipo</span></h1>
-        <p className="text-sm text-stone-400 mt-2 max-w-2xl">Tareas delegadas pendientes. Si algo lleva más de 3 días, haz follow-up.</p>
-      </div>
-
-      {waitingTasks.length === 0 && (
-        <div className="text-center py-20">
-          <div className="text-4xl mb-4">🎯</div>
-          <div className="font-display text-xl italic text-stone-400">Sin delegaciones pendientes</div>
-          <div className="text-xs text-stone-600 mt-2 font-mono">Todo está en tu cancha</div>
-        </div>
-      )}
-
-      <div className="space-y-6">
-        {TEAM.filter(name => byPerson[name]).map(name => (
-          <div key={name}>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-stone-700 to-stone-800 flex items-center justify-center text-sm font-semibold text-stone-300">{name[0]}</div>
-              <div>
-                <div className="font-display text-lg">{name}</div>
-                <div className="text-[10px] text-stone-500 font-mono uppercase tracking-wider">{byPerson[name].length} tarea(s) en su cancha</div>
-              </div>
-            </div>
-            <div className="space-y-2 ml-12">
-              {byPerson[name].map(t => {
-                const p = getProject(projects, t.project);
-                return (
-                  <div key={t.id} className="group flex items-center gap-3 p-3 bg-stone-900/30 border border-stone-800 rounded-lg hover:border-stone-700 transition-all">
-                    <span className="w-1 h-8 rounded-full" style={{ background: p.color }} />
-                    <div className="flex-1 cursor-pointer" onClick={() => onOpen(t)}>
-                      <div className="text-[9px] uppercase tracking-wider font-mono font-semibold" style={{ color: p.color }}>{p.name}</div>
-                      <div className="text-sm text-stone-100">{t.title}</div>
-                    </div>
-                    <button onClick={() => onMove(t.id, 'hoy')} className="opacity-0 group-hover:opacity-100 px-3 py-1.5 bg-stone-800 hover:bg-stone-700 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all">
-                      <ArrowRight className="w-3 h-3" /> Retomar
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -1679,11 +1561,6 @@ function TaskDetailDrawer({ task, onClose, onUpdate, onDelete, onToggleSubtask, 
             <Field label="Proyecto">
               <select value={task.project} onChange={(e) => onUpdate({ project: e.target.value })} className="w-full bg-stone-900 border border-stone-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-amber-500/50">
                 {Object.values(projects).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-            </Field>
-            <Field label="Asignado">
-              <select value={task.assignee} onChange={(e) => onUpdate({ assignee: e.target.value })} className="w-full bg-stone-900 border border-stone-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-amber-500/50">
-                {TEAM.map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </Field>
             <Field label="Estimado (min)">
@@ -1873,13 +1750,12 @@ function QuickAddModal({ projects, prefill, onClose, onAdd }) {
   const [priority, setPriority] = useState('q2');
   const [column, setColumn] = useState('inbox');
   const [estimate, setEstimate] = useState(30);
-  const [assignee, setAssignee] = useState('Alejandro');
   const [time, setTime] = useState('');
   const [recurrence, setRecurrence] = useState('none');
 
   const submit = () => {
     if (!title.trim() || !project) return;
-    onAdd({ title: title.trim(), description: description.trim(), project, priority, column, estimate: Number(estimate), assignee, time: time || null, recurrence });
+    onAdd({ title: title.trim(), description: description.trim(), project, priority, column, estimate: Number(estimate), time: time || null, recurrence });
   };
 
   return (
@@ -1901,7 +1777,6 @@ function QuickAddModal({ projects, prefill, onClose, onAdd }) {
             <SelectField label="Proyecto" value={project} onChange={setProject} options={Object.values(projects).map(p => [p.id, p.name])} />
             <SelectField label="Prioridad" value={priority} onChange={setPriority} options={Object.keys(PRIORITIES).map(k => [k, PRIORITIES[k].short + ' · ' + PRIORITIES[k].label])} />
             <SelectField label="Columna" value={column} onChange={setColumn} options={COLUMNS.map(c => [c.id, c.name])} />
-            <SelectField label="Asignado" value={assignee} onChange={setAssignee} options={TEAM.map(n => [n, n])} />
             <div>
               <div className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-mono mb-1.5">Minutos</div>
               <input type="number" value={estimate} onChange={(e) => setEstimate(e.target.value)} className="w-full bg-stone-900 border border-stone-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500/50" />
